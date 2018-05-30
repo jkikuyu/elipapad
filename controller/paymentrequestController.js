@@ -5,7 +5,7 @@ const PaymentRequestDao = require('../dao/paymentrequestdao');
 const ControllerCommon = require('./common/controllercommon');
 
 /* Load PaymentRequest entity */
-const PaymentRequest = require('../model/paymentrequest');
+let PaymentRequest = require('../model/paymentrequest');
 
 
 var padinteract = require("../util/createxml");
@@ -17,14 +17,15 @@ class PaymentRequestController {
     constructor() {
         this.PaymentRequestDao = new PaymentRequestDao();
         this.common = new ControllerCommon();
+
     }
 
 
     makePayment(req, res) {
         let PaymentRequest = new PaymentRequest();
-        if (req.body.amount) {
-            PaymentRequest.amount = req.body.amount;
-        }
+        PaymentRequest.amount = req.params.amount;
+    
+
         let requestxml = "\r\n<request>\r\n\t<command>purchase</command>\r\n\t<amount>" + 
         PaymentRequest.amount + "</amount>\r\n</request>";
 

@@ -1,11 +1,11 @@
 class PaymentRequest {
     constructor(requestid, type,amount, requestxml, status, requestedby) {
-        requestid = this.requestid;
-        type    = this.type;
-        amount = this.amount;
-        requestxml= this.requestxml;
-        status =this.status;
-        requestedby = this.requestedby;
+        this.requestid = requestid;
+        this.type = type  ;
+        this.amount = amount;
+        this.requestxml= requestxml;
+        this.status = status ;
+        this.requestedby= requestedby;
     }
 }
 
