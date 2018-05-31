@@ -90,4 +90,4 @@ class Common {
     }
 }
 
-module.exports = Common;
+module.exports = Common

@@ -8,6 +8,4 @@ class PaymentRequest {
         this.requestedby= requestedby;
     }
 }
-
-module.exports = PaymentRequest;
-
+module.exports=PaymentRequest

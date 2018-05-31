@@ -7,7 +7,6 @@ const PaymentRequestController = require('../../controller/paymentrequestcontrol
 const paymentRequestController = new PaymentRequestController();
 router.get('/elipapad/:amount', function (req, res) {
     paymentRequestController.makePayment(req, res);
-    res.send('About this wiki');
 });
 router.get('/', function (req, res) {
     //paymentRequestController.makePayment(req, res);

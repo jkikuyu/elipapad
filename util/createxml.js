@@ -1,5 +1,5 @@
 var SerialPort = require('serialport');
-var parseString = require('xml2js').parseString;
+var parseString = require('buffer');
 var port = new SerialPort('COM3', {
   baudRate: 9600
 });
@@ -11,6 +11,11 @@ padrequest: function(xml) {
         if (err) {
             return console.log('Error on write: ', err.message);
         }
+        
+        port.on('data', (data) => {
+           
+            console.log(data.toString("utf8"));
+        });
         return true;
         });
     },
@@ -20,4 +25,4 @@ padrequest: function(xml) {
           });    
     }
 };
-
+module.exports=padinteract

@@ -8,7 +8,7 @@ const ControllerCommon = require('./common/controllercommon');
 let PaymentRequest = require('../model/paymentrequest');
 
 
-var padinteract = require("../util/createxml");
+let createxml = require("../util/createxml");
 /**
  * Payment Request Controller
  */
@@ -22,24 +22,29 @@ class PaymentRequestController {
 
 
     makePayment(req, res) {
-        let PaymentRequest = new PaymentRequest();
-        PaymentRequest.amount = req.params.amount;
-    
-
+        let paymentrequest= new PaymentRequest();
+        
+        paymentrequest.amount = req.query.amount;
+        console.log(paymentrequest.amount);
         let requestxml = "\r\n<request>\r\n\t<command>purchase</command>\r\n\t<amount>" + 
-        PaymentRequest.amount + "</amount>\r\n</request>";
+        paymentrequest.amount + "</amount>\r\n</request>";
+        let datetime = new Date().toLocaleString().
+        replace(/T/, ' ').      // replace T with a space
+        replace(/\..+/, '') 
+        paymentrequest.status = 1;
+        paymentrequest.type = 1;
+        paymentrequest.requestxml= requestxml;
+        paymentrequest.date = datetime;
+        console.log(paymentrequest.date);
 
-        PaymentRequest.status = 1;
-        PaymentRequest.type;
-        PaymentRequest.requestxml= requestxml;
-       
-        this.PaymentRequestDao.create(PaymentRequest)
+        this.PaymentRequestDao.create(paymentrequest)
             .then(this.common.editSuccess(res))
             .catch(this.common.serverError(res));
-        padinteract.padrequest(requestxml);
-        let xmlResponse = padinteract.padresponse();
-        console.log(xmlReponse);
-    }
+        //let createxml = new CreateXml();
+        createxml.padrequest(requestxml);
+        //let xmlResponse = createxml.padresponse();
+        //console.log(xmlResponse);
+     }
 }
 
     module.exports = PaymentRequestController;

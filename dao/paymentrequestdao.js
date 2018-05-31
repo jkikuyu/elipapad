@@ -2,24 +2,29 @@
 const paymentrequest = require('../model/paymentrequest');
 
 /* Load DAO Common functions */
-const daoCommon = require('./common/daoCommon');
+const daoCommon = require('./common/daocommon');
 class PaymentRequestDao {
-    update(PaymentRequest) {
+    constructor() {
+        this.common = new daoCommon();
+    }
+
+    update(paymentrequest) {
         let sqlRequest = "UPDATE paymentrequest SET " +
             "type=$type, " +
             "amount=$amount, " +
             "requestxml=$requestxml, " +
             "status=$status, " +
             "requestedby=$requestedby, " +
-            "WHERE paymentrequestid=$paymentrequestid";
+            "WHERE requestid=$requestid";
 
     
         let sqlParams = {
-            $type : PaymentRequest.type,
-            $amount : PaymentRequest.amount,
-            $requestxml: PaymentRequest.requestxml,
-            $status : PaymentRequest.status,
-            $requestedby : PaymentRequest.requestedby
+            $type : paymentrequest.type,
+            $amount : paymentrequest.amount,
+            $requestxml: paymentrequest.requestxml,
+            $status : paymentrequest.status,
+            $date:paymentrequest.date,
+            $requestedby : paymentrequest.requestedby
         };
         return this.common.run(sqlRequest, sqlParams);
     };
@@ -29,21 +34,20 @@ class PaymentRequestDao {
      * @params Car
      * returns database insertion status
      */
-    create(PaymentRequest) {
+    create(paymentrequest) {
         let sqlRequest = "INSERT into paymentrequest" + 
-        "(requestid, type,amount, requestxml, status, requestedby) " +
-        "VALUES ($requestid, $type, $amount, $requestxml, $status, $requestedby)";
+        "(type,amount, requestxml, date, status, requestedby) " +
+        "VALUES ($type, $amount, $requestxml,$date, $status, $requestedby)";
         let sqlParams = {
-            $type    : PaymentRequest.type,
-            $amount : PaymentRequest.amount,
-            $requestxml: PaymentRequest.requestxml,
-            $status : PaymentRequest.status,
-            $requestedby : PaymentRequest.requestedby
+            $type    : paymentrequest.type,
+            $amount : paymentrequest.amount,
+            $requestxml: paymentrequest.requestxml,
+            $status : paymentrequest.status,
+            $date:    paymentrequest.date,
+            $requestedby : paymentrequest.requestedby
         };
         return this.common.run(sqlRequest, sqlParams);
     };
-
-
     /**
      * Returns true if an entity exists with the given Id / Primary Key
      * @params id
