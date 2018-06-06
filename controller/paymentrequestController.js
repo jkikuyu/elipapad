@@ -3,6 +3,8 @@ const PaymentRequestDao = require('../dao/paymentrequestdao');
 
 /* Load Controller Common function */
 const ControllerCommon = require('./common/controllercommon');
+const  events = require('events');
+
 
 /* Load PaymentRequest entity */
 let PaymentRequest = require('../model/paymentrequest');
@@ -36,15 +38,44 @@ class PaymentRequestController {
         paymentrequest.requestxml= requestxml;
         paymentrequest.date = datetime;
         console.log(paymentrequest.date);
+        console.log("res " + res);
+        createxml.padrequest(requestxml,paymentrequest, res);
 
-        this.PaymentRequestDao.create(paymentrequest)
-            .then(this.common.editSuccess(res))
-            .catch(this.common.serverError(res));
+
         //let createxml = new CreateXml();
-        createxml.padrequest(requestxml);
-        //let xmlResponse = createxml.padresponse();
-        //console.log(xmlResponse);
-     }
+         }
+ /*         
+         var responsexml = eventEmitter.on('result', lstnr);
+        eventEmitter.emit('result');
+        
+        
+
+            resultxml.replace(/\r?\n|\r/|/\s/g,'')
+            paymentrequest.responsexml = resultxml;
+            this.PaymentRequestDao.update(paymentrequest);
+            var request = new Request('https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya', {
+                method: 'POST', 
+                mode: 'cors', 
+                redirect: 'follow',
+                headers: new Headers({
+                    'Content-Type': 'text/xml'
+                }),
+                body:responsexml
+            });
+            fetch(request).then(function(response) {
+                console.log(response);
+        
+            }).catch(function(err) {
+            // Error :(
+            });
+ */    
+
+  //      })
+       // responsexml.replace(/\s/g, '');
+
+
+     
 }
+
 
     module.exports = PaymentRequestController;

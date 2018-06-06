@@ -14,7 +14,9 @@ class PaymentRequestDao {
             "amount=$amount, " +
             "requestxml=$requestxml, " +
             "status=$status, " +
+            "date=$date, " +
             "requestedby=$requestedby, " +
+            "responsexml=$responsexml " +
             "WHERE requestid=$requestid";
 
     
@@ -24,7 +26,8 @@ class PaymentRequestDao {
             $requestxml: paymentrequest.requestxml,
             $status : paymentrequest.status,
             $date:paymentrequest.date,
-            $requestedby : paymentrequest.requestedby
+            $requestedby : paymentrequest.requestedby,
+            $requestid : paymentrequest.requestid
         };
         return this.common.run(sqlRequest, sqlParams);
     };
@@ -36,15 +39,16 @@ class PaymentRequestDao {
      */
     create(paymentrequest) {
         let sqlRequest = "INSERT into paymentrequest" + 
-        "(type,amount, requestxml, date, status, requestedby) " +
-        "VALUES ($type, $amount, $requestxml,$date, $status, $requestedby)";
+        "(type,amount, requestxml, date, status, requestedby, responsexml) " +
+        "VALUES ($type, $amount, $requestxml,$date, $status, $requestedby, $responsexml)";
         let sqlParams = {
             $type    : paymentrequest.type,
             $amount : paymentrequest.amount,
             $requestxml: paymentrequest.requestxml,
             $status : paymentrequest.status,
             $date:    paymentrequest.date,
-            $requestedby : paymentrequest.requestedby
+            $requestedby : paymentrequest.requestedby,
+            $responsexml : paymentrequest.responsexml
         };
         return this.common.run(sqlRequest, sqlParams);
     };
