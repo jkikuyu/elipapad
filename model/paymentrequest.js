@@ -1,3 +1,7 @@
+/**
+ * @author Jude
+ * date 31/5/2018 * 
+ */
 class PaymentRequest {
     constructor(requestid, type,amount, requestxml, status, requestedby, responsexml) {
         this.requestid = requestid;

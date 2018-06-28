@@ -10,7 +10,8 @@ const  events = require('events');
 let PaymentRequest = require('../model/paymentrequest');
 
 
-let createxml = require("../util/createxml");
+let pinpad= require("../util/pinpad");
+//var promise = require('promise');
 /**
  * Payment Request Controller
  */
@@ -37,10 +38,27 @@ class PaymentRequestController {
         paymentrequest.type = 1;
         paymentrequest.requestxml= requestxml;
         paymentrequest.date = datetime;
-        console.log(paymentrequest.date);
-        console.log("res " + res);
-        createxml.padrequest(requestxml,paymentrequest, res);
+        this.PaymentRequestDao.create(paymentrequest);
+        pinpad.padrequest(requestxml).then((resultxml)=>{
+            console.log(resultxml);
+            const options = {
+                url: 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya',
+                method: 'POST', 
+                mode: 'cors', 
+                redirect: 'follow',
+                headers: {
+                    'Content-Type': 'text/xml'
+                },
+                body:responsexml
+            };
+            request(options, function(err, res, body) {  
+                console.log(body);
+                
+            }); 
 
+
+
+        });
 
         //let createxml = new CreateXml();
          }
