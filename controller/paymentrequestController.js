@@ -1,19 +1,23 @@
-/* Load PaymentRequest Data Access Object */
+
+// Load PaymentRequest Data Access Object 
 const PaymentRequestDao = require('../dao/paymentrequestdao');
 
-/* Load Controller Common function */
+// Load Controller Common function 
 const ControllerCommon = require('./common/controllercommon');
 const  events = require('events');
 
+// Load PaymentRequest entity 
+const PaymentRequest = require('../model/paymentrequest');
 
-/* Load PaymentRequest entity */
-let PaymentRequest = require('../model/paymentrequest');
+const pinpad= require("../util/pinpad");
 
+const stringToXml = require('xml2js').parseString;
 
-let pinpad= require("../util/pinpad");
-//var promise = require('promise');
+const fetch = require('node-fetch');
 /**
- * Payment Request Controller
+ * @author Jude
+ * date 6/6/2018
+ * 
  */
 class PaymentRequestController {
 
@@ -22,11 +26,9 @@ class PaymentRequestController {
         this.common = new ControllerCommon();
 
     }
-
-
-    makePayment(req, res) {
+    tillRequest(req, res) {
         let paymentrequest= new PaymentRequest();
-        
+        let responsexml = null;
         paymentrequest.amount = req.query.amount;
         console.log(paymentrequest.amount);
         let requestxml = "\r\n<request>\r\n\t<command>purchase</command>\r\n\t<amount>" + 
@@ -41,59 +43,64 @@ class PaymentRequestController {
         this.PaymentRequestDao.create(paymentrequest);
         pinpad.padrequest(requestxml).then((resultxml)=>{
             console.log(resultxml);
+            stringToXml.parseString(resultxml,)
+
+            if()
+            let url = 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya';
             const options = {
-                url: 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya',
                 method: 'POST', 
                 mode: 'cors', 
                 redirect: 'follow',
                 headers: {
                     'Content-Type': 'text/xml'
                 },
-                body:responsexml
+                body:resultxml
             };
-            request(options, function(err, res, body) {  
-                console.log(body);
-                
-            }); 
+            try{
+                fetch(url, options)
+                    .then(response => response.text())
+                    .then(response => {
+                        console.log(response);
+                    });
 
-
+    /*            request(options, function(err, res, body) {  
+                    console.error('Error on write: ', err.message);
+                    console.log(body);
+                    responsexml = body;
+                    responsexml.replace(/\r?\n|\r/|/\s/g,'')
+                    paymentrequest.responsexml = responsexml;
+                    this.PaymentRequestDao.update(paymentrequest);
+                    console.log(body);
+                    convertXmlToObj(responsexml);
+                    let json = '{"message":success, "messagecode":"000"}';
+                    res.json(json);
+            
+                }); 
+    */
+            }
+            catch(error){
+                console.error(error);
+            }
 
         });
-
-        //let createxml = new CreateXml();
-         }
- /*         
-         var responsexml = eventEmitter.on('result', lstnr);
-        eventEmitter.emit('result');
+    }
+    /**
+     * conert xml to js object and return result
+     * @param {*} xml 
+     */
+    convertoXmlToObj(xml){
         
-        
+        stringToXml.parseString(xml,function(err,xmlobj){
+            if(err){
+                console.error(err);
+            }
+            else{
+                return xmlobj;
+            }
+        });
 
-            resultxml.replace(/\r?\n|\r/|/\s/g,'')
-            paymentrequest.responsexml = resultxml;
-            this.PaymentRequestDao.update(paymentrequest);
-            var request = new Request('https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya', {
-                method: 'POST', 
-                mode: 'cors', 
-                redirect: 'follow',
-                headers: new Headers({
-                    'Content-Type': 'text/xml'
-                }),
-                body:responsexml
-            });
-            fetch(request).then(function(response) {
-                console.log(response);
-        
-            }).catch(function(err) {
-            // Error :(
-            });
- */    
-
-  //      })
-       // responsexml.replace(/\s/g, '');
-
-
+    }
+    
      
 }
-
-
-    module.exports = PaymentRequestController;
+module.exports = PaymentRequestController;

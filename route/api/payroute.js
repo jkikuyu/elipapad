@@ -6,7 +6,7 @@ const router = express.Router();
 const PaymentRequestController = require('../../controller/paymentrequestcontroller');
 const paymentRequestController = new PaymentRequestController();
 router.get('/elipapad/:amount', function (req, res) {
-    paymentRequestController.makePayment(req, res);
+    paymentRequestController.tillRequest(req, res);
 });
 router.get('/', function (req, res) {
     //paymentRequestController.makePayment(req, res);
