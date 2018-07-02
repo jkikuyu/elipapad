@@ -11,7 +11,7 @@ const PaymentRequest = require('../model/paymentrequest');
 
 const pinpad= require("../util/pinpad");
 
-const stringToXml = require('xml2js').parseString;
+const stringToXml = require('xml2js');
 
 const fetch = require('node-fetch');
 /**
@@ -24,7 +24,6 @@ class PaymentRequestController {
     constructor() {
         this.PaymentRequestDao = new PaymentRequestDao();
         this.common = new ControllerCommon();
-
     }
     tillRequest(req, res) {
         let paymentrequest= new PaymentRequest();
@@ -41,66 +40,88 @@ class PaymentRequestController {
         paymentrequest.requestxml= requestxml;
         paymentrequest.date = datetime;
         this.PaymentRequestDao.create(paymentrequest);
-        pinpad.padrequest(requestxml).then((resultxml)=>{
-            console.log(resultxml);
-            stringToXml.parseString(resultxml,)
-
-            if()
-            let url = 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya';
-            const options = {
-                method: 'POST', 
-                mode: 'cors', 
-                redirect: 'follow',
-                headers: {
-                    'Content-Type': 'text/xml'
-                },
-                body:resultxml
-            };
-            try{
-                fetch(url, options)
-                    .then(response => response.text())
-                    .then(response => {
-                        console.log(response);
-                    });
-
-    /*            request(options, function(err, res, body) {  
-                    console.error('Error on write: ', err.message);
-                    console.log(body);
-                    responsexml = body;
-                    responsexml.replace(/\r?\n|\r/|/\s/g,'')
-                    paymentrequest.responsexml = responsexml;
-                    this.PaymentRequestDao.update(paymentrequest);
-                    console.log(body);
-                    convertXmlToObj(responsexml);
-                    let json = '{"message":success, "messagecode":"000"}';
-                    res.json(json);
+        pinpad.padrequest(requestxml).then(resultxml=>{
+           console.log(resultxml.substr(1, resultxml.indexOf('>')-1));
+           let tagName = resultxml.substr(1, resultxml.indexOf('>')-1);
+            if(tagName=="pinpadStatusResponse"){
+            /**this.convertoXmlToObj(resultxml).then(obj=>{
+                console.log(obj);
+                console.log(obj.pinpadStatusResponse['responseCode'][0]);
             
-                }); 
-    */
+                if(obj.pinpadStatusResponse['responseCode'][0]== "06"){
+            **/
+                let json = {"messagecode":"001","message":"cancelled"};
+                res.json(json);
             }
-            catch(error){
-                console.error(error);
-            }
+            else{
+                    let url = 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya';
+                    const options = {
+                        method: 'POST', 
+                        mode: 'cors', 
+                        redirect: 'follow',
+                        headers: {
+                            'Content-Type': 'text/xml'
+                        },
+                        body:resultxml
+                    };
+                    try{
+                        fetch(url, options)
+                            .then(responsexml => responsexml.text())
+                            .then(responsexml => {
+                                if(responsexml.substr(responsexml.indexOf('<field39>')+9,2 )=="00"){
+                                    let json = {"messagecode":"000","message":"success"};
+                                    res.json(json);
+                                }
+                                else{
+                                    let json = {"messagecode":'002',"message":"failed"};
+                                    res.json(json);
 
-        });
+                                }
+                            });
+    
+                        /*  request(options, function(err, res, body) {  
+                            console.error('Error on write: ', err.message);
+                            console.log(body);
+                            responsexml = body;
+                            responsexml.replace(/\r?\n|\r/|/\s/g,'')
+                            paymentrequest.responsexml = responsexml;
+                            this.PaymentRequestDao.update(paymentrequest);
+                            console.log(body);
+                            convertXmlToObj(responsexml);
+                            let json = '{"message":success, "messagecode":"000"}';
+                            res.json(json);
+                    
+                        }); 
+                         */
+                    }
+                    catch(error){
+                        console.error(error);
+                    }
+                }
+            });
+        
+        //});
     }
-    /**
+
+        /**
      * conert xml to js object and return result
      * @param {*} xml 
      */
     convertoXmlToObj(xml){
-        
-        stringToXml.parseString(xml,function(err,xmlobj){
-            if(err){
-                console.error(err);
-            }
-            else{
-                return xmlobj;
-            }
-        });
+        //console.log("convert xml to object");
+        return new Promise(function (resolve, reject) {
+            stringToXml.parseString(xml,function(err,xmlobj){
+                if(err){
+                    console.error(err);
+                    reject(err);
+                }
+                else{
+                    resolve(xmlobj);
+                }
+            });
 
+        });
     }
-    
      
 }
 module.exports = PaymentRequestController;
