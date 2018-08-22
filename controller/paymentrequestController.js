@@ -14,6 +14,9 @@ const pinpad= require("../util/pinpad");
 const stringToXml = require('xml2js');
 
 const fetch = require('node-fetch');
+
+const path = require('path');
+
 /**
  * @author Jude
  * date 6/6/2018
@@ -28,6 +31,9 @@ class PaymentRequestController {
     tillRequest(req, res) {
         let paymentrequest= new PaymentRequest();
         let responsexml = null;
+        let userName = process.env['USERPROFILE'].split(path.sep)[2];
+        let loginId = path.join("domainName",userName);
+        console.log(loginId);
         paymentrequest.amount = req.query.amount;
         console.log(paymentrequest.amount);
         let requestxml = "\r\n<request>\r\n\t<command>purchase</command>\r\n\t<amount>" + 
@@ -44,6 +50,7 @@ class PaymentRequestController {
            console.log(resultxml.substr(1, resultxml.indexOf('>')-1));
            let tagName = resultxml.substr(1, resultxml.indexOf('>')-1);
             if(tagName=="pinpadStatusResponse"){
+
             /**this.convertoXmlToObj(resultxml).then(obj=>{
                 console.log(obj);
                 console.log(obj.pinpadStatusResponse['responseCode'][0]);
@@ -53,7 +60,10 @@ class PaymentRequestController {
                 let json = {"messagecode":"001","message":"cancelled"};
                 res.json(json);
             }
-            else{
+            else{   
+                   // console.log("update response....");
+                    paymentrequest.responsexml = resultxml;
+                    this.PaymentRequestDao.update(paymentrequest);
                     let url = 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya';
                     const options = {
                         method: 'POST', 
@@ -64,7 +74,6 @@ class PaymentRequestController {
                         },
                         body:resultxml
                     };
-                    try{
                         fetch(url, options)
                             .then(responsexml => responsexml.text())
                             .then(responsexml => {
@@ -77,6 +86,8 @@ class PaymentRequestController {
                                     res.json(json);
 
                                 }
+                            }).catch(error=>{
+                                console.log("error message " +error);
                             });
     
                         /*  request(options, function(err, res, body) {  
@@ -94,10 +105,7 @@ class PaymentRequestController {
                         }); 
                          */
                     }
-                    catch(error){
-                        console.error(error);
-                    }
-                }
+
             });
         
         //});

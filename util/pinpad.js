@@ -4,14 +4,17 @@
  * class to connect to pinpad. Write a message and get response.
  */
 const SerialPort = require('serialport');
+
+require('dotenv').load();
+
 const parseString = require('buffer');
 const PaymentRequestDao = require('../dao/paymentrequestdao');
 const cerror = require('../util/global');
-
-var port = new SerialPort('COM3', {
-  baudRate: 9600
-});
-port.reject(err).then()
+const serialname=process.env.SERIAL;
+let port = 0;
+const exists = portName => SerialPort.list().then(ports => ports.some(port => port.comName === portName ));
+exists(serialname).then(res => res? port = new SerialPort(serialname, {baudRate: 9600}):padinteract.padExit());
+//var port = new SerialPort(serialname, {baudRate: 9600});
 var resp;
 var padinteract = {
 padrequest: function(xml) {
@@ -35,7 +38,10 @@ padrequest: function(xml) {
 
     });
 },
-
+padExit:function(){
+    console.log(serialname + " is not connected. Please connect pinpad to " + serialname);
+    process.exit(1);
+},
 padresponse: function(){
     port.on('readable', function () {
         resp =  port.read();

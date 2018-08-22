@@ -1,4 +1,3 @@
-/* Load Car entity */
 const paymentrequest = require('../model/paymentrequest');
 
 /* Load DAO Common functions */
@@ -19,22 +18,24 @@ class PaymentRequestDao {
             "responsexml=$responsexml " +
             "WHERE requestid=$requestid";
 
+            let sqlParams = {
+                $type    : paymentrequest.type,
+                $amount : paymentrequest.amount,
+                $requestxml: paymentrequest.requestxml,
+                $status : paymentrequest.status,
+                $date:    paymentrequest.date,
+                $requestedby : paymentrequest.requestedby,
+                $responsexml : paymentrequest.responsexml,
+                $requestid : paymentrequest.requestid
+
+            };
     
-        let sqlParams = {
-            $type : paymentrequest.type,
-            $amount : paymentrequest.amount,
-            $requestxml: paymentrequest.requestxml,
-            $status : paymentrequest.status,
-            $date:paymentrequest.date,
-            $requestedby : paymentrequest.requestedby,
-            $requestid : paymentrequest.requestid
-        };
         return this.common.run(sqlRequest, sqlParams);
     };
 
     /**
      * Creates the given entity in the database
-     * @params Car
+     * @params paymentrequest
      * returns database insertion status
      */
     create(paymentrequest) {
