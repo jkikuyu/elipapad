@@ -63,6 +63,7 @@ class PaymentRequestDao {
         let sqlParams = {$paymentrequestid: paymentrequestid};
         return this.common.run(sqlRequest, sqlParams);
     };
+
 }
 
 module.exports = PaymentRequestDao;

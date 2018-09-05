@@ -1,6 +1,8 @@
 
 // Load PaymentRequest Data Access Object 
 const PaymentRequestDao = require('../dao/paymentrequestdao');
+const PaymentResponseDao = require('../dao/paymentresponsedao');
+
 
 // Load Controller Common function 
 const ControllerCommon = require('./common/controllercommon');
@@ -45,7 +47,9 @@ class PaymentRequestController {
         paymentrequest.type = 1;
         paymentrequest.requestxml= requestxml;
         paymentrequest.date = datetime;
-        this.PaymentRequestDao.create(paymentrequest);
+        this.PaymentRequestDao.create(paymentrequest).then(outcome=>{
+            requestId= outcome[1];
+        });
         pinpad.padrequest(requestxml).then(resultxml=>{
            console.log(resultxml.substr(1, resultxml.indexOf('>')-1));
            let tagName = resultxml.substr(1, resultxml.indexOf('>')-1);
@@ -62,8 +66,17 @@ class PaymentRequestController {
             }
             else{   
                    // console.log("update response....");
-                    paymentrequest.responsexml = resultxml;
-                    this.PaymentRequestDao.update(paymentrequest);
+                   let datetime = new Date().toLocaleString().
+                   replace(/T/, ' ').      // replace T with a space
+                   replace(/\..+/, '') 
+           
+                   this.PaymentResponseDao.
+                   paymentresponse.requestid = requestId;
+                    paymentresponse.responsexml = resultxml;
+                    paymentresponse.date = datetime;
+                    paymentresponse.status = 1;
+
+                    this.PaymentResponseDao.create(paymentresponse);
                     let url = 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya';
                     const options = {
                         method: 'POST', 
