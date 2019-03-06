@@ -1,8 +1,8 @@
-const paymentrequest = require('../model/paymentresponse');
+const paymentresponse = require('../model/paymentresponse');
 
 /* Load DAO Common functions */
 const daoCommon = require('./common/daocommon');
-class PaymentRequestDao {
+class PaymentResponseDao {
     constructor() {
         this.common = new daoCommon();
     }

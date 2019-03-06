@@ -32,6 +32,7 @@ class PaymentRequestController {
     }
     tillRequest(req, res) {
         let paymentrequest= new PaymentRequest();
+        let requestId = null;
         let responsexml = null;
         let userName = process.env['USERPROFILE'].split(path.sep)[2];
         let loginId = path.join("domainName",userName);
@@ -48,7 +49,8 @@ class PaymentRequestController {
         paymentrequest.requestxml= requestxml;
         paymentrequest.date = datetime;
         this.PaymentRequestDao.create(paymentrequest).then(outcome=>{
-            requestId= outcome[1];
+            console.log(outcome[1]);
+            requestId = outcome[1];
         });
         pinpad.padrequest(requestxml).then(resultxml=>{
            console.log(resultxml.substr(1, resultxml.indexOf('>')-1));
@@ -70,13 +72,14 @@ class PaymentRequestController {
                    replace(/T/, ' ').      // replace T with a space
                    replace(/\..+/, '') 
            
-                   this.PaymentResponseDao.
+                /*   this.PaymentResponseDao.
                    paymentresponse.requestid = requestId;
                     paymentresponse.responsexml = resultxml;
                     paymentresponse.date = datetime;
                     paymentresponse.status = 1;
 
                     this.PaymentResponseDao.create(paymentresponse);
+                */
                     let url = 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya';
                     const options = {
                         method: 'POST', 
@@ -90,6 +93,7 @@ class PaymentRequestController {
                         fetch(url, options)
                             .then(responsexml => responsexml.text())
                             .then(responsexml => {
+                                console.log(responsexml);
                                 if(responsexml.substr(responsexml.indexOf('<field39>')+9,2 )=="00"){
                                     let json = {"messagecode":"000","message":"success"};
                                     res.json(json);

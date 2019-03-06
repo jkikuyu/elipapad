@@ -15,4 +15,4 @@ class PaymentResponse {
         this.status = status ;
     }
 }
-module.exports=PaymentRequest
+module.exports=PaymentResponse
