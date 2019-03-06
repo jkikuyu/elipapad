@@ -10,6 +10,8 @@ const  events = require('events');
 
 // Load PaymentRequest entity 
 const PaymentRequest = require('../model/paymentrequest');
+const PaymentResponse = require('../model/paymentresponse');
+
 
 const pinpad= require("../util/pinpad");
 
@@ -28,6 +30,7 @@ class PaymentRequestController {
 
     constructor() {
         this.PaymentRequestDao = new PaymentRequestDao();
+        this.PaymentResponseDao = new PaymentResponseDao();
         this.common = new ControllerCommon();
     }
     tillRequest(req, res) {
@@ -43,12 +46,16 @@ class PaymentRequestController {
         let datetime = new Date().toLocaleString().
         replace(/T/, ' ').      // replace T with a space
         replace(/\..+/, '') 
+        let requestId = 0;
+
         paymentrequest.status = 1;
         paymentrequest.type = 1;
         paymentrequest.requestxml= requestxml;
         paymentrequest.date = datetime;
-        this.PaymentRequestDao.create(paymentrequest).then(outcome=>{
-            requestId= outcome[1];
+    
+        this.PaymentRequestDao.create(paymentrequest).then(out=>{
+            requestId = out;
+            console.log("request id: " + requestId);
         });
         pinpad.padrequest(requestxml).then(resultxml=>{
            console.log(resultxml.substr(1, resultxml.indexOf('>')-1));
@@ -66,17 +73,16 @@ class PaymentRequestController {
             }
             else{   
                    // console.log("update response....");
+                   let paymentresponse = new PaymentResponse();
                    let datetime = new Date().toLocaleString().
                    replace(/T/, ' ').      // replace T with a space
                    replace(/\..+/, '') 
-           
-                   this.PaymentResponseDao.
-                   paymentresponse.requestid = requestId;
-                    paymentresponse.responsexml = resultxml;
+
+                    paymentresponse.requestid = requestId;
                     paymentresponse.date = datetime;
                     paymentresponse.status = 1;
+                    paymentresponse.tillid="0001";
 
-                    this.PaymentResponseDao.create(paymentresponse);
                     let url = 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya';
                     const options = {
                         method: 'POST', 
@@ -90,7 +96,12 @@ class PaymentRequestController {
                         fetch(url, options)
                             .then(responsexml => responsexml.text())
                             .then(responsexml => {
+                                console.log('response ' + responsexml);
+                                paymentresponse.responsexml = responsexml;
+                                this.PaymentResponseDao.create(paymentresponse);
                                 if(responsexml.substr(responsexml.indexOf('<field39>')+9,2 )=="00"){
+                                    
+
                                     let json = {"messagecode":"000","message":"success"};
                                     res.json(json);
                                 }
@@ -99,6 +110,7 @@ class PaymentRequestController {
                                     res.json(json);
 
                                 }
+
                             }).catch(error=>{
                                 console.log("error message " +error);
                             });
@@ -117,6 +129,8 @@ class PaymentRequestController {
                     
                         }); 
                          */
+                       
+   
                     }
 
             });

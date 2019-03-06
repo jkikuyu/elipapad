@@ -75,6 +75,7 @@ class Common {
             stmt.run(sqlParams, function (err) {
                 if (this.changes === 1) {
                     let stmt = database.db.prepare(sqlRequest);
+                    console.log("result: " +this.lastID);
                     resolve(this.lastID);
                 } else if (this.changes === 0) {
                     reject(

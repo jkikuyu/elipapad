@@ -1,17 +1,18 @@
-const paymentrequest = require('../model/paymentresponse');
+const paymentresponse = require('../model/paymentresponse');
 
 /* Load DAO Common functions */
 const daoCommon = require('./common/daocommon');
-class PaymentRequestDao {
+class PaymentResponseDao {
     constructor() {
         this.common = new daoCommon();
     }
-    update(paymentrequest) {
+    update(paymentresponse) {
         let sqlResponse = "UPDATE paymentresponse SET " +
             "amount=$amount, " +
             "status=$status, " +
             "date=$date, " +
-            "responsexml=$responsexml " +
+            "responsexml=$responsexml, " +
+            "tillid =$tillid"
             "WHERE responsetid=$responseid";
 
             let sqlParams = {
@@ -19,8 +20,9 @@ class PaymentRequestDao {
                 $responseid :paymentresponse.responseid,
                 $status : paymentresponse.status,
                 $date:    paymentresponse.date,
-                $responsexml : paymentresponse.responsexml
-                
+                $responsexml : paymentresponse.responsexml,
+                $tillid : paymentresponse.tillid
+         
 
             };
     
@@ -33,17 +35,18 @@ class PaymentRequestDao {
      * returns database insertion status
      */
     create(paymentresponse) {
-        let sqlRequest = "INSERT into paymentrequest" + 
-        "(type,amount, requestxml, date, status, requestedby, responsexml) " +
-        "VALUES ($type, $amount, $requestxml,$date, $status, $requestedby, $responsexml)";
+        let sqlResponse = "INSERT into paymentresponse" + 
+        "(responseid, requestid, date, status, responsexml,tillid) " +
+        "VALUES ($responseid, $requestid,$date, $status, $responsexml, $tillid)";
         let sqlParams = {
-            $requestid : paymentresponse.$requestid,
+            $requestid : paymentresponse.requestid,
             $responseid :paymentresponse.responseid,
             $status : paymentresponse.status,
             $date:    paymentresponse.date,
-            $responsexml : paymentresponse.responsexml
+            $responsexml : paymentresponse.responsexml,
+            $tillid :paymentresponse.tillid
     };
-        return this.common.run(sqlRequest, sqlParams);
+        return this.common.run(sqlResponse, sqlParams);
     };
     /**
      * Returns true if an entity exists with the given Id / Primary Key
