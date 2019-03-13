@@ -10,6 +10,8 @@ const  events = require('events');
 
 // Load PaymentRequest entity 
 const PaymentRequest = require('../model/paymentrequest');
+const PaymentResponse = require('../model/paymentresponse');
+
 
 const pinpad= require("../util/pinpad");
 
@@ -28,11 +30,12 @@ class PaymentRequestController {
 
     constructor() {
         this.PaymentRequestDao = new PaymentRequestDao();
+        this.PaymentResponseDao = new PaymentResponseDao();
         this.common = new ControllerCommon();
     }
     tillRequest(req, res) {
         let paymentrequest= new PaymentRequest();
-        let requestId = null;
+        // let requestId = null;
         let responsexml = null;
         let userName = process.env['USERPROFILE'].split(path.sep)[2];
         let loginId = path.join("domainName",userName);
@@ -44,6 +47,8 @@ class PaymentRequestController {
         let datetime = new Date().toLocaleString().
         replace(/T/, ' ').      // replace T with a space
         replace(/\..+/, '') 
+        let requestId = 0;
+
         paymentrequest.status = 1;
         paymentrequest.type = 1;
         paymentrequest.requestxml= requestxml;
@@ -68,6 +73,7 @@ class PaymentRequestController {
             }
             else{   
                    // console.log("update response....");
+                   let paymentresponse = new PaymentResponse();
                    let datetime = new Date().toLocaleString().
                    replace(/T/, ' ').      // replace T with a space
                    replace(/\..+/, '') 
@@ -77,6 +83,7 @@ class PaymentRequestController {
                     paymentresponse.responsexml = resultxml;
                     paymentresponse.date = datetime;
                     paymentresponse.status = 1;
+                    paymentresponse.tillid="0001";
 
                     this.PaymentResponseDao.create(paymentresponse);
                 */
@@ -95,6 +102,8 @@ class PaymentRequestController {
                             .then(responsexml => {
                                 console.log(responsexml);
                                 if(responsexml.substr(responsexml.indexOf('<field39>')+9,2 )=="00"){
+                                    
+
                                     let json = {"messagecode":"000","message":"success"};
                                     res.json(json);
                                 }
@@ -103,6 +112,7 @@ class PaymentRequestController {
                                     res.json(json);
 
                                 }
+
                             }).catch(error=>{
                                 console.log("error message " +error);
                             });
@@ -121,6 +131,8 @@ class PaymentRequestController {
                     
                         }); 
                          */
+                       
+   
                     }
 
             });
