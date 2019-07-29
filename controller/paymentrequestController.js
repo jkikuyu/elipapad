@@ -43,7 +43,7 @@ class PaymentRequestController {
         paymentrequest.amount = req.query.amount;
         console.log(paymentrequest.amount);
         let requestxml = "\r\n<request>\r\n\t<command>purchase</command>\r\n\t<amount>" + 
-        paymentrequest.amount + "</amount>\r\n</request>";
+        paymentrequest.amount + "</amount>\r\n<currency>404</currency></request>";
         let datetime = new Date().toLocaleString().
         replace(/T/, ' ').      // replace T with a space
         replace(/\..+/, '') 
@@ -87,7 +87,7 @@ class PaymentRequestController {
 
                     this.PaymentResponseDao.create(paymentresponse);
                 */
-                    let url = 'https://qa.interswitchng.com/kmw/v2/kimonoservice/kenya';
+                    let url = 'https://kimono.interswitchng.com/kmw/kimonoservice/kenya';
                     const options = {
                         method: 'POST', 
                         mode: 'cors', 
