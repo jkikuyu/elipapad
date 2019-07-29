@@ -5,7 +5,7 @@
  */
 const SerialPort = require('serialport');
 
-require('dotenv').load();
+require('dotenv').config();
 
 const parseString = require('buffer');
 const PaymentRequestDao = require('../dao/paymentrequestdao');
