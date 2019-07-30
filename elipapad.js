@@ -2,13 +2,22 @@
 const express = require("express"),
 	 bodyParser = require("body-parser"),
 	 nexe = require("nexe"),
+	 ejs = require("ejs"),
 	 Service = require('node-windows').Service;
 
 /* Database configuration */
 const database = require('./config/dbconfig');
-
+ 
 const padreq = express();
+padreq.set("view engine", "ejs");
+padreq.use(bodyParser.urlencoded({ extended: true }));
+padreq.use(bodyParser.json());
 database.init();
+
+// const parameters = {
+// 	amount: 1000,
+// 	curr : ['KES','USD']
+// }
 
 //create the .exe file
 nexe.compile({
@@ -53,9 +62,28 @@ svc.install();
 //   console.log('Uninstall complete.');
 //   console.log('The service exists: ',svc.exists);
 // });
+// svc.uninstall(); 
 
-// Uninstall the service.
-// svc.uninstall();
+
+padreq.get("/", (req, res) => {
+	res.render("index");
+});
+
+padreq.post("http://localhost:8082/api/v1/elipapad/purchase", (req, res) => {
+	res.send({
+		amount: req.body.amount,
+		curr: req.body.curr
+	});
+});
+
+// padreq.post('https://ipay-staging.ipayafrica.com/backoffice-togo/public/index.php/api/pos', (req,res)=>{
+// 	res.send({
+// 		txncode:"B2B20181119181290",
+// 		desc:"LAICO",
+// 		amount:req.body.amount,
+// 		curr:req.body.curr
+// 	})
+// })
 
 const port = process.argv[2] || 8082;
 padreq.listen(port, function () {
