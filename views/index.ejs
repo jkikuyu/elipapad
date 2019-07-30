@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="./style.css" />
+		<title>Document</title>
+	</head>
+	<body>
+		<div class="limiter">
+			<div class="container">
+				<div class="wrap">
+					<form action="http://localhost:8082/api/v1/elipapad/purchase" method="GET" class="form">
+						<h1 class="page-heading">Proceed to checkout</h1>
+
+						<div class="content">
+							<div class="form-group">
+								<label for="Amount"></label>
+								<input
+									class="form-control"
+									name="amount"
+									type="number"
+									required
+									placeholder="Amount"
+									
+									
+								/>
+							</div>
+							<div class="form-group">
+								<label for="currency"></label>
+								<select class="form-control"  name="curr" >
+								  <option value="404">KES</option>
+								  <option value="840">USD</option>
+								 
+								</select>
+							</div>
+							<!-- <button class="btn btn-primary btn-block">Complete Payment</button> -->
+							<input class="btn btn-primary btn-block" type="submit">
+
+
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
