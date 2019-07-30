@@ -20,7 +20,7 @@ const stringToXml = require('xml2js');
 const fetch = require('node-fetch');
 
 const path = require('path');
-
+const parseString = require('xml2js').parseString;
 /**
  * @author Jude
  * date 6/6/2018
@@ -41,9 +41,10 @@ class PaymentRequestController {
         let loginId = path.join("domainName",userName);
         console.log(loginId);
         paymentrequest.amount = req.query.amount;
+        paymentrequest.curr = req.query.curr;
         console.log(paymentrequest.amount);
         let requestxml = "\r\n<request>\r\n\t<command>purchase</command>\r\n\t<amount>" + 
-        paymentrequest.amount + "</amount>\r\n<currency>404</currency></request>";
+        paymentrequest.amount + "</amount>\r\n<currency>"+ paymentrequest.curr +"</currency></request>";
         let datetime = new Date().toLocaleString().
         replace(/T/, ' ').      // replace T with a space
         replace(/\..+/, '') 
@@ -100,7 +101,10 @@ class PaymentRequestController {
                         fetch(url, options)
                             .then(responsexml => responsexml.text())
                             .then(responsexml => {
-                                console.log(responsexml);
+                                //console.log(responsexml);
+                                parseString(responsexml, function(err,result){
+                                    console.log(JSON.stringify(result));
+                                })
                                 if(responsexml.substr(responsexml.indexOf('<field39>')+9,2 )=="00"){
                                     
 
