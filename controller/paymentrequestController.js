@@ -15,7 +15,7 @@ const PaymentResponse = require('../model/paymentresponse');
 
 const pinpad= require("../util/pinpad");
 
-const stringToXml = require('xml2js');
+const xml2js = require('xml2js');
 
 const fetch = require('node-fetch');
 
@@ -78,7 +78,8 @@ class PaymentRequestController {
                    let datetime = new Date().toLocaleString().
                    replace(/T/, ' ').      // replace T with a space
                    replace(/\..+/, '') 
-           
+                    //console.log(paymentresponse);
+
                 /*   this.PaymentResponseDao.
                    paymentresponse.requestid = requestId;
                     paymentresponse.responsexml = resultxml;
@@ -101,9 +102,13 @@ class PaymentRequestController {
                         fetch(url, options)
                             .then(responsexml => responsexml.text())
                             .then(responsexml => {
-                                //console.log(responsexml);
+                                //console.log(`This is the response xml: ${responsexml}`)
                                 parseString(responsexml, function(err,result){
-                                    console.log(JSON.stringify(result));
+                                    const returnJSON= JSON.stringify(result);
+                                    console.log(`This is the returned JSON format: ${returnJSON}`);
+                                    const jsonParse = JSON.parse(returnJSON);
+                                    const refNumber = jsonParse.purchaseResponse.referenceNumber;
+                                    console.log(`The reference number is :${refNumber}`);
                                 })
                                 if(responsexml.substr(responsexml.indexOf('<field39>')+9,2 )=="00"){
                                     
@@ -148,21 +153,21 @@ class PaymentRequestController {
      * conert xml to js object and return result
      * @param {*} xml 
      */
-    convertoXmlToObj(xml){
-        //console.log("convert xml to object");
-        return new Promise(function (resolve, reject) {
-            stringToXml.parseString(xml,function(err,xmlobj){
-                if(err){
-                    console.error(err);
-                    reject(err);
-                }
-                else{
-                    resolve(xmlobj);
-                }
-            });
+    // convertoXmlToObj(xml){
+    //     //console.log("convert xml to object");
+    //     return new Promise(function (resolve, reject) {
+    //         stringToXml.parseString(xml,function(err,xmlobj){
+    //             if(err){
+    //                 console.error(err);
+    //                 reject(err);
+    //             }
+    //             else{
+    //                 resolve(xmlobj);
+    //             }
+    //         });
 
-        });
-    }
+    //     });
+    // }
      
 }
 module.exports = PaymentRequestController;
