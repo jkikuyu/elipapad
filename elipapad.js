@@ -3,12 +3,15 @@ const express = require("express"),
 	 bodyParser = require("body-parser"),
 	 nexe = require("nexe"),
 	 ejs = require("ejs"),
-	 Service = require('node-windows').Service;
+	 Service = require('node-windows').Service,
+   cors = require("cors");
 
 /* Database configuration */
 const database = require('./config/dbconfig');
  
+
 const padreq = express();
+padreq.use(cors());
 padreq.set("view engine", "ejs");
 padreq.use(bodyParser.urlencoded({ extended: true }));
 padreq.use(bodyParser.json());
